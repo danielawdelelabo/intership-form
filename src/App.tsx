@@ -1,4 +1,9 @@
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 function App() {
   const [formData, setFormData] = useState({
@@ -21,6 +26,11 @@ function App() {
     }));
   };
 
+  // Dedicated handler for Checkbox
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData((prev) => ({ ...prev, acceptTerms: checked }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
@@ -35,91 +45,72 @@ function App() {
         </h1>
 
         <div className="space-y-2">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <Label htmlFor="email" className="block">
             Email *
-          </label>
-          <input
+          </Label>
+          <Input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="fullName"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <Label htmlFor="fullName" className="block">
             Full Name *
-          </label>
-          <input
+          </Label>
+          <Input
             type="text"
             id="fullName"
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="dateOfBirth"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <Label htmlFor="dateOfBirth" className="block">
             Date of Birth *
-          </label>
-          <input
+          </Label>
+          <Input
             type="date"
             id="dateOfBirth"
             name="dateOfBirth"
             value={formData.dateOfBirth}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="residenceAddress"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <Label htmlFor="residenceAddress" className="block">
             Residence Address *
-          </label>
-          <textarea
+          </Label>
+          <Textarea
             id="residenceAddress"
             name="residenceAddress"
             value={formData.residenceAddress}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px] resize-y"
+            className="min-h-[100px] resize-y"
           />
         </div>
 
         <div className="space-y-2">
-          <label
-            htmlFor="dateOfAgreement"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <Label htmlFor="dateOfAgreement" className="block">
             Date of Agreement *
-          </label>
-          <input
+          </Label>
+          <Input
             type="date"
             id="dateOfAgreement"
             name="dateOfAgreement"
             value={formData.dateOfAgreement}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
@@ -211,26 +202,21 @@ function App() {
         </div>
 
         <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
+          <Checkbox
             id="acceptTerms"
             name="acceptTerms"
             checked={formData.acceptTerms}
-            onChange={handleChange}
+            onCheckedChange={handleCheckboxChange}
             required
-            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
-          <label htmlFor="acceptTerms" className="text-sm text-gray-700">
+          <Label htmlFor="acceptTerms" className="text-sm">
             I accept the terms and conditions *
-          </label>
+          </Label>
         </div>
 
-        <button
-          type="submit"
-          className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-        >
+        <Button type="submit" className="w-full py-3 px-4">
           Submit Application
-        </button>
+        </Button>
       </form>
     </div>
   );
