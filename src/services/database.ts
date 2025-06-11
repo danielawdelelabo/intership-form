@@ -1,49 +1,40 @@
-import pool from "../config/database";
+import type { InternshipApplication } from "./types";
 
-export interface InternshipApplication {
-  email: string;
-  fullName: string;
-  dateOfBirth: Date;
-  residenceAddress: string;
-  dateOfAgreement: Date;
-  signatureData: string;
-  termsAccepted: boolean;
-}
+const API_BASE_URL = "https://bwscript.bwarabia.com/api/internship";
 
 export const createApplication = async (application: InternshipApplication) => {
-  const client = await pool.connect();
   try {
-    const result = await client.query(
-      `INSERT INTO internship_applications 
-       (email, full_name, date_of_birth, residence_address, date_of_agreement, signature_data, terms_accepted)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING *`,
-      [
-        application.email,
-        application.fullName,
-        application.dateOfBirth,
-        application.residenceAddress,
-        application.dateOfAgreement,
-        application.signatureData,
-        application.termsAccepted,
-      ]
-    );
-    return result.rows[0];
-  } finally {
-    client.release();
+    const response = await fetch(`${API_BASE_URL}/applications`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(application),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating application:", error);
+    throw error;
   }
 };
 
 export const getApplication = async (id: number) => {
-  const client = await pool.connect();
   try {
-    const result = await client.query(
-      "SELECT * FROM internship_applications WHERE id = $1",
-      [id]
-    );
-    return result.rows[0];
-  } finally {
-    client.release();
+    const response = await fetch(`${API_BASE_URL}/applications/${id}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching application:", error);
+    throw error;
   }
 };
 
@@ -52,27 +43,22 @@ export const updateApplicationStatus = async (
   status: string,
   notes?: string
 ) => {
-  const client = await pool.connect();
   try {
-    await client.query("BEGIN");
+    const response = await fetch(`${API_BASE_URL}/applications/${id}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status, notes }),
+    });
 
-    // Update the application status
-    await client.query(
-      "UPDATE internship_applications SET status = $1 WHERE id = $2",
-      [status, id]
-    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    // Add status history
-    await client.query(
-      "INSERT INTO application_status_history (application_id, status, notes) VALUES ($1, $2, $3)",
-      [id, status, notes]
-    );
-
-    await client.query("COMMIT");
+    return await response.json();
   } catch (error) {
-    await client.query("ROLLBACK");
+    console.error("Error updating application status:", error);
     throw error;
-  } finally {
-    client.release();
   }
 };
