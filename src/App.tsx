@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import SignaturePad from "react-signature-canvas";
 import { createApplication } from "./services/database";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "application/pdf"];
+
 function App() {
   const [formData, setFormData] = useState({
     email: "",
@@ -17,8 +20,11 @@ function App() {
     acceptTerms: false,
   });
 
-  const [signatureData, setSignatureData] = useState("");
+  const [signatureImageUrl, setSignatureImageUrl] = useState("");
+  const [idDocumentUrl, setIdDocumentUrl] = useState("");
   const [penColor, setPenColor] = useState("black");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const sigPadRef = useRef<SignaturePad>(null);
 
   const handleChange = (
@@ -30,20 +36,65 @@ function App() {
       [name]:
         type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
+    setError(null);
   };
 
   // Dedicated handler for Checkbox
   const handleCheckboxChange = (checked: boolean) => {
     setFormData((prev) => ({ ...prev, acceptTerms: checked }));
+    setError(null);
+  };
+
+  const validateFile = (file: File): string | null => {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      return "Please upload a valid file type (JPEG, PNG, or PDF)";
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return "File size must be less than 5MB";
+    }
+    return null;
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validationError = validateFile(file);
+    if (validationError) {
+      setError(validationError);
+      e.target.value = ""; // Clear the input
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadstart = () => setIsSubmitting(true);
+    reader.onloadend = () => {
+      setIdDocumentUrl(reader.result as string);
+      setIsSubmitting(false);
+      setError(null);
+    };
+    reader.onerror = () => {
+      setError("Error reading file. Please try again.");
+      setIsSubmitting(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signatureData) {
-      alert("Please provide your signature.");
+    setError(null);
+
+    if (!signatureImageUrl) {
+      setError("Please provide your signature.");
       return;
     }
 
+    if (!idDocumentUrl) {
+      setError("Please upload your ID document.");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       const application = await createApplication({
         email: formData.email,
@@ -51,7 +102,8 @@ function App() {
         dateOfBirth: new Date(formData.dateOfBirth),
         residenceAddress: formData.residenceAddress,
         dateOfAgreement: new Date(formData.dateOfAgreement),
-        signatureData: signatureData,
+        signatureImageUrl: signatureImageUrl,
+        idDocumentUrl: idDocumentUrl,
         termsAccepted: formData.acceptTerms,
       });
 
@@ -67,20 +119,28 @@ function App() {
         dateOfAgreement: "",
         acceptTerms: false,
       });
-      setSignatureData("");
+      setSignatureImageUrl("");
+      setIdDocumentUrl("");
       if (sigPadRef.current) {
         sigPadRef.current.clear();
       }
     } catch (error) {
       console.error("Error submitting application:", error);
-      alert(
+      setError(
         "There was an error submitting your application. Please try again."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto my-8 p-8 bg-white rounded-lg shadow-md">
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
           Internship Application Form
@@ -287,7 +347,7 @@ function App() {
               }}
               onEnd={() => {
                 if (sigPadRef.current) {
-                  setSignatureData(
+                  setSignatureImageUrl(
                     sigPadRef.current.getTrimmedCanvas().toDataURL("image/png")
                   );
                 }
@@ -298,12 +358,29 @@ function App() {
               className="absolute right-4 bottom-2 text-yellow-400 font-bold text-lg hover:underline"
               onClick={() => {
                 sigPadRef.current?.clear();
-                setSignatureData("");
+                setSignatureImageUrl("");
               }}
             >
               Clear
             </button>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="idDocument" className="block text-lg font-semibold">
+            ID Document <span className="text-red-500">*</span>
+          </Label>
+          <p className="text-gray-400 mb-2">
+            Upload a copy of your ID document (JPEG, PNG, or PDF, max 5MB)
+          </p>
+          <Input
+            type="file"
+            id="idDocument"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={handleFileUpload}
+            disabled={isSubmitting}
+            required
+          />
         </div>
 
         <div className="flex items-center space-x-2">
@@ -312,6 +389,7 @@ function App() {
             name="acceptTerms"
             checked={formData.acceptTerms}
             onCheckedChange={handleCheckboxChange}
+            disabled={isSubmitting}
             required
           />
           <Label htmlFor="acceptTerms" className="text-sm">
@@ -319,8 +397,12 @@ function App() {
           </Label>
         </div>
 
-        <Button type="submit" className="w-full py-3 px-4">
-          Submit Application
+        <Button
+          type="submit"
+          className="w-full py-3 px-4"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Submit Application"}
         </Button>
       </form>
     </div>
