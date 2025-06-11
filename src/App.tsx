@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import SignaturePad from "react-signature-canvas";
+import { createApplication } from "./services/database";
 
 function App() {
   const [formData, setFormData] = useState({
@@ -36,14 +37,46 @@ function App() {
     setFormData((prev) => ({ ...prev, acceptTerms: checked }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!signatureData) {
       alert("Please provide your signature.");
       return;
     }
-    console.log("Form submitted:", { ...formData, signature: signatureData });
-    // Here you would typically send the data to your backend
+
+    try {
+      const application = await createApplication({
+        email: formData.email,
+        fullName: formData.fullName,
+        dateOfBirth: new Date(formData.dateOfBirth),
+        residenceAddress: formData.residenceAddress,
+        dateOfAgreement: new Date(formData.dateOfAgreement),
+        signatureData: signatureData,
+        termsAccepted: formData.acceptTerms,
+      });
+
+      console.log("Application submitted successfully:", application);
+      alert("Your application has been submitted successfully!");
+
+      // Reset form
+      setFormData({
+        email: "",
+        fullName: "",
+        dateOfBirth: "",
+        residenceAddress: "",
+        dateOfAgreement: "",
+        acceptTerms: false,
+      });
+      setSignatureData("");
+      if (sigPadRef.current) {
+        sigPadRef.current.clear();
+      }
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      alert(
+        "There was an error submitting your application. Please try again."
+      );
+    }
   };
 
   return (
