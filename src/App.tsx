@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import SignaturePad from "react-signature-canvas";
 
 function App() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,10 @@ function App() {
     dateOfAgreement: "",
     acceptTerms: false,
   });
+
+  const [signatureData, setSignatureData] = useState("");
+  const [penColor, setPenColor] = useState("black");
+  const sigPadRef = useRef<SignaturePad>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -33,7 +38,11 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    if (!signatureData) {
+      alert("Please provide your signature.");
+      return;
+    }
+    console.log("Form submitted:", { ...formData, signature: signatureData });
     // Here you would typically send the data to your backend
   };
 
@@ -198,6 +207,69 @@ function App() {
                 Wednesdays from 10:00 AM to 12:00 PM.
               </p>
             </div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="block text-lg font-semibold">
+            Your Signature <span className="text-red-500">*</span>
+          </Label>
+          <p className="text-gray-400 mb-2">Add your signature here</p>
+          <div className="mb-2">Signature</div>
+          <div className="flex items-center space-x-4 mb-2">
+            {[
+              { color: "black", label: "Black" },
+              { color: "blue", label: "Blue" },
+              { color: "red", label: "Red" },
+              { color: "green", label: "Green" },
+            ].map((c) => (
+              <button
+                key={c.color}
+                type="button"
+                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                  penColor === c.color ? "border-black" : "border-transparent"
+                }`}
+                style={{ backgroundColor: c.color }}
+                aria-label={c.label}
+                onClick={() => setPenColor(c.color)}
+              >
+                {penColor === c.color && (
+                  <span className="text-white text-xs">✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+          <div
+            className="relative bg-white rounded-lg border"
+            style={{ minHeight: 180 }}
+          >
+            <SignaturePad
+              ref={sigPadRef}
+              penColor={penColor}
+              canvasProps={{
+                width: 800,
+                height: 180,
+                className:
+                  "rounded-lg w-full h-44 bg-white border-none outline-none",
+              }}
+              onEnd={() => {
+                if (sigPadRef.current) {
+                  setSignatureData(
+                    sigPadRef.current.getTrimmedCanvas().toDataURL("image/png")
+                  );
+                }
+              }}
+            />
+            <button
+              type="button"
+              className="absolute right-4 bottom-2 text-yellow-400 font-bold text-lg hover:underline"
+              onClick={() => {
+                sigPadRef.current?.clear();
+                setSignatureData("");
+              }}
+            >
+              Clear
+            </button>
           </div>
         </div>
 
