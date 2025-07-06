@@ -482,35 +482,37 @@ export const GetAllComponent = () => {
           <Table className="min-w-full">
             <TableHeader>
               <TableRow className="bg-gray-50">
-                <TableHead className="min-w-[60px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[60px] font-semibold text-gray-900">
                   ID
                 </TableHead>
-                <TableHead className="min-w-[120px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[120px] font-semibold text-gray-900">
                   Full Name
                 </TableHead>
-                <TableHead className="min-w-[180px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[180px] font-semibold text-gray-900">
                   Email
                 </TableHead>
-                <TableHead className="min-w-[120px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[120px] font-semibold text-gray-900">
                   Date of Birth
                 </TableHead>
-                <TableHead className="min-w-[150px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[150px] font-semibold text-gray-900">
                   Residence Address
                 </TableHead>
-                <TableHead className="min-w-[120px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[120px] font-semibold text-gray-900">
                   Agreement Date
                 </TableHead>
-
-                <TableHead className="min-w-[120px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[120px] font-semibold text-gray-900">
+                  Terms Accepted
+                </TableHead>
+                <TableHead className="min-w-[120px] font-semibold text-gray-900">
                   Created At
                 </TableHead>
-                <TableHead className="min-w-[120px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[120px] font-semibold text-gray-900">
                   Document
                 </TableHead>
-                <TableHead className="min-w-[120px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[120px] font-semibold text-gray-900">
                   Signature
                 </TableHead>
-                <TableHead className="min-w-[100px] font-semibold text-gray-900 text-center">
+                <TableHead className="min-w-[100px] font-semibold text-gray-900">
                   Actions
                 </TableHead>
               </TableRow>
@@ -521,27 +523,27 @@ export const GetAllComponent = () => {
                   key={`${item.id}-${index}`}
                   className="hover:bg-gray-50 transition-colors"
                 >
-                  <TableCell className="font-medium text-gray-900 text-center">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mx-auto">
+                  <TableCell className="font-medium text-gray-900">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                       <span className="text-sm font-semibold text-blue-700">
                         {index + 1}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="min-w-[120px] text-center">
+                  <TableCell className="min-w-[120px]">
                     <div className="font-medium text-gray-900">
                       {item.full_name}
                     </div>
                   </TableCell>
-                  <TableCell className="min-w-[180px] break-all text-center">
+                  <TableCell className="min-w-[180px] break-all">
                     <div className="text-gray-700">{item.email}</div>
                   </TableCell>
-                  <TableCell className="min-w-[120px] whitespace-nowrap text-center">
+                  <TableCell className="min-w-[120px] whitespace-nowrap">
                     <div className="text-gray-700">
                       {new Date(item.date_of_birth).toLocaleDateString()}
                     </div>
                   </TableCell>
-                  <TableCell className="min-w-[150px] max-w-[200px] text-center">
+                  <TableCell className="min-w-[150px] max-w-[200px]">
                     <div
                       className="truncate text-gray-700"
                       title={item.residence_address}
@@ -549,16 +551,29 @@ export const GetAllComponent = () => {
                       {item.residence_address}
                     </div>
                   </TableCell>
-                  <TableCell className="min-w-[120px] whitespace-nowrap text-center">
+                  <TableCell className="min-w-[120px] whitespace-nowrap">
                     <div className="text-gray-700">
                       {new Date(item.date_of_agreement).toLocaleDateString()}
                     </div>
                   </TableCell>
-                  <TableCell className="min-w-[120px] whitespace-nowrap text-center">
+                  <TableCell className="min-w-[120px]">
+                    <div className="flex items-center">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          item.terms_accepted
+                            ? " text-green-800"
+                            : " text-red-800"
+                        }`}
+                      >
+                        {item.terms_accepted ? "✅ Accepted" : "❌ Declined"}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="min-w-[120px] whitespace-nowrap">
                     <div className="text-gray-700">
                       {new Date(item.created_at).toLocaleDateString()}
                     </div>
-                  </TableCell>                  <TableCell className="min-w-[120px] text-center">
+                  </TableCell>                  <TableCell className="min-w-[120px]">
                     {item.id_document_url ? (
                       <div className="flex flex-col items-center space-y-2">
                         <div
@@ -592,7 +607,7 @@ export const GetAllComponent = () => {
                       </div>
                     ) : (
                       <div className="text-center">
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto">
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
                           <FileText className="w-6 h-6 text-gray-400" />
                         </div>
                         <span className="text-xs text-gray-400 mt-1">
@@ -601,7 +616,7 @@ export const GetAllComponent = () => {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="min-w-[120px] text-center">
+                  <TableCell className="min-w-[120px]">
                     {item.signature_image_url ? (
                       <div className="flex flex-col items-center space-y-2">
                         <div
@@ -629,7 +644,7 @@ export const GetAllComponent = () => {
                       </div>
                     ) : (
                       <div className="text-center">
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto">
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
                           <Edit className="w-6 h-6 text-gray-400" />
                         </div>
                         <span className="text-xs text-gray-400 mt-1">
@@ -638,7 +653,7 @@ export const GetAllComponent = () => {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="min-w-[100px] text-center">
+                  <TableCell className="min-w-[100px]">
                     <div className="flex space-x-2">
                       {" "}
                       <button

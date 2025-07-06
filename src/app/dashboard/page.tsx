@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useSession, signOut } from "next-auth/react";
 import {
   ClipboardList,
   CheckCircle,
   Clock,
   Menu,
-  LogOut,
 } from "lucide-react";
 import { GetAllComponent } from "../dashbaordComponents/getAll";
 import { SideBar } from "../dashbaordComponents/sideBar";
@@ -65,7 +63,7 @@ const OverviewComponent = () => {
             </div>
           </div>
         </div>
-      </div>     
+      </div>
     </div>
   );
 };
@@ -73,13 +71,8 @@ const OverviewComponent = () => {
 
 
 const Page = () => {
-  const { data: session } = useSession();
   const [currentView, setCurrentView] = useState("overview");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const handleSignOut = () => {
-    signOut({ callbackUrl: "/" });
-  };
 
   const getPageTitle = () => {
     switch (currentView) {
@@ -158,41 +151,22 @@ const Page = () => {
             </div>
 
             <div className="flex items-center space-x-2 lg:space-x-4">
-
-              {/* Notifications */}
-              {/* <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <Bell className="w-5 h-5" />
-                <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></div>
-              </button> */}
-
-              {/* Profile */}
               <div className="flex items-center space-x-2 lg:space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-sm">
-                    {session?.user?.name?.charAt(0) || session?.user?.email?.charAt(0) || "U"}
-                  </span>
+                  <span className="text-white font-semibold text-sm">A</span>
                 </div>
                 <div className="hidden lg:block">
                   <p className="text-sm font-medium text-gray-900">
-                    {session?.user?.name || "User"}
+                    Admin User
                   </p>
-                  <p className="text-xs text-gray-500">
-                    {session?.user?.email || "user@example.com"}
-                  </p>
+                  <p className="text-xs text-gray-500">Administrator</p>
                 </div>
-                <button
-                  onClick={handleSignOut}
-                  className="ml-2 p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Sign Out"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Content */}
+
         <main className="flex-1 overflow-auto">
           <div className="p-4 lg:p-6">{renderContent()}</div>
         </main>

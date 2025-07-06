@@ -68,7 +68,7 @@ export default function Home() {
             <>
               <Link
                 href="/form"
-                className="group relative w-full flex justify-center py-4 px-8 border-2 border-[#D6DE23] rounded-2xl text-lg font-semibold text-white bg-[#D6DE23] hover:bg-transparent hover:text-[#000] focus:outline-none focus:ring-4 focus:ring-[#D6DE23]/30 transition-all duration-300 ease-out transform hover:scale-105 hover:shadow-2xl hover:shadow-[#D6DE23]/25 active:scale-95"
+                className="group relative w-full flex justify-center py-4 px-8 border-2 border-[#D6DE23] rounded-2xl text-lg font-semibold text-white bg-[#D6DE23] hover:bg-transparent hover:text-[#D6DE23] focus:outline-none focus:ring-4 focus:ring-[#D6DE23]/30 transition-all duration-300 ease-out transform hover:scale-105 hover:shadow-2xl hover:shadow-[#D6DE23]/25 active:scale-95"
               >
                 <span className="relative z-10 flex items-center space-x-3">
                   <span>ACCEPT APPLICATION</span>

@@ -16,7 +16,6 @@ const Page = () => {
   const sigPadRef = useRef<SignaturePad>(null);
   const [penColor, setPenColor] = useState("black");
   const today = format(new Date(), "yyyy-MM-dd");
-  const eighteenYearsAgo = format(new Date(new Date().setFullYear(new Date().getFullYear() - 18)), "yyyy-MM-dd");
   const [formData, setFormData] = useState({
     email: "",
     fullName: "",
@@ -556,11 +555,11 @@ const Page = () => {
             name="dateOfBirth"
             value={formData.dateOfBirth}
             onChange={handleChange}
-            max={eighteenYearsAgo}
+            max={today}
             required
           />
           <p className="text-sm text-gray-500">
-            You must be at least 18 years old to apply.
+            You must be between 18 and 40 years old to apply.
           </p>
           {error && formData.dateOfBirth && (
             <div className="flex items-center space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -597,7 +596,11 @@ const Page = () => {
             disabled
             required
             className="bg-gray-100 cursor-not-allowed"
-          />
+          />{" "}
+          <p className="text-sm text-gray-500">
+            This date is automatically set to today&apos;s date and cannot be
+            changed.
+          </p>
         </div>
         <div className="bg-gray-50 p-6 rounded-lg space-y-4">
           <h2 className="text-xl font-semibold text-gray-800">
